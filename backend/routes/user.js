@@ -5,7 +5,7 @@ const zod = require("zod");
 const {JWT_SECRET} =require("../config")
 
 const signupSchema = zod.object({
-    username: zod.string().email(),
+    username: zod.string.email(),
     password: zod.string(),
     firstName: zod.string(),
     lastName: zod.string()
@@ -50,6 +50,21 @@ router.post("/signup", async(req, res) => {
 
 router.post("/signin", (req, res) => {
 
+})
+
+const siginSchema = zod.object({
+    username: zod.string.email(),
+    password: zod.string()
+})
+
+router.post("/signin", (req, res) => {
+    const {success} = siginSchema.safeParse(req.body);
+    if(!success) {
+        return res.status(411).json({
+            message: "invalid username or password"
+        })
+    }
+    
 })
 
 module.exports = router;
