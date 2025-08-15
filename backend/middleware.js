@@ -1,11 +1,11 @@
 const { JWT_SECRET } = require("./config");
-
+const jwt = require("jsonwebtoken");
 
 const authMiddleware = (req, res , next) => {
     const authHeader = req.headers.authorization;
 
     if(!authHeader || !authHeader.startsWith('Bearer ')) {
-        res.status(403).json({
+        return res.status(403).json({
             message: "invalid user!"
         })
     }
@@ -19,9 +19,13 @@ const authMiddleware = (req, res , next) => {
 
         next();
     } catch(e) {
-        res.status(403).json({
+        return res.status(403).json({
             message: "Invalid user!!"
         })
     }
 
+}
+
+module.exports= {
+    authMiddleware
 }
