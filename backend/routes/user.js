@@ -1,12 +1,13 @@
 const express = require("express");
-const User = require("../db")
+const {User, Account} = require("../db")
 const router = express.Router();
 const zod = require("zod");
+const jwt = require("jsonwebtoken")
 const {JWT_SECRET} =require("../config");
 const { authMiddleware } = require("../middleware");
 
 const signupSchema = zod.object({
-    username: zod.string.email(),
+    username: zod.string().email(),
     password: zod.string(),
     firstName: zod.string(),
     lastName: zod.string()
@@ -20,13 +21,13 @@ router.post("/signup", async(req, res) => {
         })
     }
 
-    const existingUser = User.findOne({
+    const existingUser = await User.findOne({
         username: req.body.username
     })
 
     if(existingUser) {
         return res.status(404).json({
-            messgae: "user already signed up!!"
+            message: "user already signed up!!"
         })
     } 
 
@@ -57,11 +58,11 @@ router.post("/signup", async(req, res) => {
 })
 
 const siginSchema = zod.object({
-    username: zod.string.email(),
+    username: zod.string().email(),
     password: zod.string()
 })
 
-router.post("/signin", (req, res) => {
+router.post("/signin", async(req, res) => {
     const {success} = siginSchema.safeParse(req.body);
     if(!success) {
         return res.status(411).json({
@@ -69,7 +70,7 @@ router.post("/signin", (req, res) => {
         })
     }
 
-    const user = User.findOne({
+    const user = await User.findOne({
         username: req.body.username,
         password: req.body.password
     });
