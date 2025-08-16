@@ -1,5 +1,5 @@
 const express = require("express");
-const userModel = require("../db")
+const User = require("../db")
 const router = express.Router();
 const zod = require("zod");
 const {JWT_SECRET} =require("../config");
@@ -20,7 +20,7 @@ router.post("/signup", async(req, res) => {
         })
     }
 
-    const existingUser = userModel.findOne({
+    const existingUser = User.findOne({
         username: req.body.username
     })
 
@@ -30,7 +30,7 @@ router.post("/signup", async(req, res) => {
         })
     } 
 
-    const user = await userModel.create({
+    const user = await User.create({
         username: req.body.username,
         password: req.body.password,
         firstName: req.body.firstName,
@@ -62,7 +62,7 @@ router.post("/signin", (req, res) => {
         })
     }
 
-    const user = userModel.findOne({
+    const user = User.findOne({
         username: req.body.username,
         password: req.body.password
     });
@@ -99,7 +99,7 @@ router.put("/", authMiddleware, async(req, res) => {
         })
     }
 
-    await userModel.updateOne(
+    await User.updateOne(
         {_id: req.userId},
         {$set: req.body}
     )
@@ -112,7 +112,7 @@ router.put("/", authMiddleware, async(req, res) => {
 router.get("/bulk", async(req, res) => {
     const filter = req.query.filter || "";
 
-    const users = await userModel.find({
+    const users = await User.find({
         $or: [{
             firstName: {
                 "$regex": filter
